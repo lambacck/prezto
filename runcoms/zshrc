@@ -18,3 +18,5 @@ fi
 autoload -Uz promptinit
 promptinit
 prompt powerlevel10k
+
+set -o sh_word_split
