@@ -56,7 +56,7 @@ path=(
   $HOME/go/bin
   $path
   $HOME/bin
-
+  $HOME/.local/bin
 )
 
 #
@@ -77,3 +77,8 @@ fi
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
 source /usr/local/bin/virtualenvwrapper.sh
 
+
+# Created by `pipx` on 2021-12-10 21:47:13
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
