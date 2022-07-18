@@ -9,6 +9,9 @@
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
+if [[ -s "$HOME/.zshrc.local" ]]; then
+  source "$HOME/.zshrc.local"
+fi
 
 # Customize to your needs...
 
@@ -18,3 +21,14 @@ fi
 autoload -Uz promptinit
 promptinit
 prompt powerlevel10k
+
+set -o sh_word_split
+
+# Created by `pipx` on 2021-12-10 21:47:13
+export PATH="$PATH:$HOME/.local/bin"
+
+setopt no_share_history
+unsetopt share_history
+zstyle ':completion:*' matcher-list ''
+unsetopt correct
+unsetopt correct_all

@@ -17,8 +17,8 @@ fi
 # Editors
 #
 
-export EDITOR='nano'
-export VISUAL='nano'
+export EDITOR='vim'
+export VISUAL='vim'
 export PAGER='less'
 
 #
@@ -28,6 +28,14 @@ export PAGER='less'
 if [[ -z "$LANG" ]]; then
   export LANG='en_US.UTF-8'
 fi
+#
+# Completions
+#
+if type brew &>/dev/null; then
+  source $(brew --prefix asdf)/libexec/asdf.sh
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+fi
+
 
 #
 # Paths
@@ -44,7 +52,11 @@ typeset -gU cdpath fpath mailpath path
 # Set the list of directories that Zsh searches for programs.
 path=(
   /usr/local/{bin,sbin}
+  /usr/local/opt/openssl/bin
+  $HOME/go/bin
   $path
+  $HOME/bin
+  $HOME/.local/bin
 )
 
 #
@@ -68,4 +80,14 @@ if [[ ! -S "$SSH_AUTH_SOCK" ]]; then
         eval "$(ssh-agent | sed '/^echo /d')"
         trap 'test -n "$SSH_AGENT_PID" && eval `/usr/bin/ssh-agent -k`' 0
     fi
+fi
+if [[ -e /usr/local/bin/virtualenvwrapper.sh ]]; then
+  export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+  source /usr/local/bin/virtualenvwrapper.sh
+fi
+
+
+# Created by `pipx` on 2021-12-10 21:47:13
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
 fi
