@@ -37,6 +37,7 @@
     vcs                     # git status
     # =========================[ Line #2 ]=========================
     newline                 # \n
+    my_arch_preference_x86  # x86_64 prompt warning
     prompt_char             # prompt symbol
   )
 
@@ -1641,6 +1642,14 @@
   # Type `p10k help segment` for documentation and a more sophisticated example.
   function prompt_example() {
     p10k segment -b 1 -f 3 -i '⭐' -t 'hello, %n'
+  }
+
+  function prompt_my_arch_preference_x86() {
+    if [[ "$(uname -sm)" != 'Darwin x86_64' || "$(sysctl -in sysctl.proc_translated)" == "0" ]]; then
+      return
+    fi
+    p10k segment -s x86_64 -i '💻' -f red -t x86_64
+
   }
 
   # User-defined prompt segments may optionally provide an instant_prompt_* function. Its job

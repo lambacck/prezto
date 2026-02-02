@@ -38,13 +38,7 @@ fi
 if [[ -z "$LANG" ]]; then
   export LANG='en_US.UTF-8'
 fi
-#
-# Completions
-#
-if type brew &>/dev/null; then
-  source $(brew --prefix asdf)/libexec/asdf.sh
-  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
-fi
+
 
 
 #
@@ -62,13 +56,37 @@ typeset -gU cdpath fpath mailpath path
 # Set the list of directories that Zsh searches for programs.
 path=(
   $HOME/{,s}bin(N)
-  /opt/{homebrew,local}/{,s}bin(N)
+  /opt/local/{,s}bin(N)
   /usr/local/{,s}bin(N)
   /usr/local/opt/openssl/bin
   $path
   $HOME/.local/bin
   $HOME/go/bin
 )
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  if [[ $(uname -m) == arm64 && -e /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ $(uname -m) == x86_64 && -e /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+  if [[ "$(uname -sm)" == 'Darwin arm64' || "$(sysctl -in sysctl.proc_translated)" == "1" ]]; then
+    alias brew86='arch --x86_64 /usr/local/bin/brew'
+  fi
+  if [[ "$(sysctl -in sysctl.proc_translated)" == "1"  ]] && type brew &>/dev/null ; then
+    export LDFLAGS="-L$(brew86 --prefix openssl)/lib" CFLAGS="-I$(brew86 --prefix openssl)/include" ASDF_DATA_DIR="$HOME/.asdf_x86_64"
+  fi
+fi
+
+#
+# Completions
+#
+if type brew &>/dev/null; then
+  if [[ -e $(brew --prefix asdf)/libexec/asdf.sh ]]; then
+    source $(brew --prefix asdf)/libexec/asdf.sh
+  fi
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+fi
 
 #
 # Less
@@ -94,8 +112,11 @@ if [[ ! -S "$SSH_AUTH_SOCK" ]]; then
         trap 'test -n "$SSH_AGENT_PID" && eval `/usr/bin/ssh-agent -k`' 0
     fi
 fi
-if [[ -e /usr/local/bin/virtualenvwrapper.sh ]]; then
-  export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+if [[ -e /opt/homebrew/bin/virtualenvwrapper.sh ]]; then
+  #export VIRTUALENVWRAPPER_PYTHON=/opt/homebrew/bin/python3
+  source /opt/homebrew/bin/virtualenvwrapper.sh
+elif [[ -e /usr/local/bin/virtualenvwrapper.sh ]]; then
+  #export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
   source /usr/local/bin/virtualenvwrapper.sh
 fi
 
@@ -104,3 +125,14 @@ fi
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
+eval "$(jenv init -)"
+pbhighlight() {
+  local ln=$1
+  shift
+  pbpaste | highlight -S $ln  -O rtf --font-size 14 "$@" | pbcopy
+}
+
+# Setting PATH for Python 3.13
+# The original version is saved in .zprofile.pysave
+PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:${PATH}"
+export PATH

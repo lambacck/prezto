@@ -1,3 +1,4 @@
+source /Users/clambacher/.bootstrap_rc
 #
 # Executes commands at the start of an interactive session.
 #
@@ -32,3 +33,10 @@ unsetopt share_history
 zstyle ':completion:*' matcher-list ''
 unsetopt correct
 unsetopt correct_all
+test -e /Users/clambacher/.iterm2_shell_integration.zsh && source /Users/clambacher/.iterm2_shell_integration.zsh || true
+if command -v direnv &> /dev/null
+then
+  eval "$(direnv hook zsh)"
+fi
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+. "$HOME/.cargo/env"
